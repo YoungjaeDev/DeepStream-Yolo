@@ -298,35 +298,35 @@ NvDsInferStatus Yolo::buildYoloNetwork(
             printLayerInfo(layerIndex, "maxpool", inputVol, outputVol, std::to_string(weightPtr));
         }
 
-        else if (m_ConfigBlocks.at(i).at("type") == "reorg") {
-            if (m_NetworkType.find("yolov5") != std::string::npos || m_NetworkType.find("yolor") != std::string::npos) {
-                std::string inputVol = dimsToString(previous->getDimensions());
-                nvinfer1::ILayer* out = reorgV5Layer(i, previous, &network);
-                previous = out->getOutput(0);
-                assert(previous != nullptr);
-                channels = getNumChannels(previous);
-                std::string outputVol = dimsToString(previous->getDimensions());
-                tensorOutputs.push_back(previous);
-                std::string layerType = "reorgV5";
-                printLayerInfo(layerIndex, layerType, inputVol, outputVol, std::to_string(weightPtr));
-            }
-            else {
-                std::string inputVol = dimsToString(previous->getDimensions());
-                nvinfer1::IPluginV2* reorgPlugin = createReorgPlugin(2);
-                assert(reorgPlugin != nullptr);
-                nvinfer1::IPluginV2Layer* reorg =
-                    network.addPluginV2(&previous, 1, *reorgPlugin);
-                assert(reorg != nullptr);
-                std::string layerName = "reorg_" + std::to_string(i);
-                reorg->setName(layerName.c_str());
-                previous = reorg->getOutput(0);
-                assert(previous != nullptr);
-                std::string outputVol = dimsToString(previous->getDimensions());
-                channels = getNumChannels(previous);
-                tensorOutputs.push_back(reorg->getOutput(0));
-                printLayerInfo(layerIndex, "reorg", inputVol, outputVol, std::to_string(weightPtr));
-            }
-        }
+//        else if (m_ConfigBlocks.at(i).at("type") == "reorg") {
+//            if (m_NetworkType.find("yolov5") != std::string::npos || m_NetworkType.find("yolor") != std::string::npos) {
+//                std::string inputVol = dimsToString(previous->getDimensions());
+//                nvinfer1::ILayer* out = reorgV5Layer(i, previous, &network);
+//                previous = out->getOutput(0);
+//                assert(previous != nullptr);
+//                channels = getNumChannels(previous);
+//                std::string outputVol = dimsToString(previous->getDimensions());
+//                tensorOutputs.push_back(previous);
+//                std::string layerType = "reorgV5";
+//                printLayerInfo(layerIndex, layerType, inputVol, outputVol, std::to_string(weightPtr));
+//            }
+//            else {
+//                std::string inputVol = dimsToString(previous->getDimensions());
+//                nvinfer1::IPluginV2* reorgPlugin = createReorgPlugin(2);
+//                assert(reorgPlugin != nullptr);
+//                nvinfer1::IPluginV2Layer* reorg =
+//                    network.addPluginV2(&previous, 1, *reorgPlugin);
+//                assert(reorg != nullptr);
+//                std::string layerName = "reorg_" + std::to_string(i);
+//                reorg->setName(layerName.c_str());
+//                previous = reorg->getOutput(0);
+//                assert(previous != nullptr);
+//                std::string outputVol = dimsToString(previous->getDimensions());
+//                channels = getNumChannels(previous);
+//                tensorOutputs.push_back(reorg->getOutput(0));
+//                printLayerInfo(layerIndex, "reorg", inputVol, outputVol, std::to_string(weightPtr));
+//            }
+//        }
 
         else if (m_ConfigBlocks.at(i).at("type") == "yolo") {
             uint modelType = 1;

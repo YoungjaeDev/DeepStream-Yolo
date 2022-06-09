@@ -1,0 +1,5 @@
+## model file
+*.wts
+*.pt
+*.engine
+*.cfg
