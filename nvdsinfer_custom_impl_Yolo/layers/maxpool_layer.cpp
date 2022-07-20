@@ -19,11 +19,16 @@ nvinfer1::ILayer* maxpoolLayer(
     int stride = std::stoi(block.at("stride"));
 
     nvinfer1::IPoolingLayer* pool
-        = network->addPoolingNd(*input, nvinfer1::PoolingType::kMAX, nvinfer1::DimsHW{size, size});
+        = network->addPoolingNd(*input, nvinfer1::PoolingType::kMAX, nvinfer1::Dims{2, {size, size}});
     assert(pool);
     std::string maxpoolLayerName = "maxpool_" + std::to_string(layerIdx);
-    pool->setStrideNd(nvinfer1::DimsHW{stride, stride});
-    pool->setPaddingMode(nvinfer1::PaddingMode::kSAME_UPPER);
+    pool->setStrideNd(nvinfer1::Dims{2, {stride, stride}});
+    pool->setPaddingNd(nvinfer1::Dims{2, {(size - 1) / 2, (size - 1) / 2}});
+    if (size == 2 && stride == 1)
+    {
+        pool->setPrePadding(nvinfer1::Dims{2, {0, 0}});
+        pool->setPostPadding(nvinfer1::Dims{2, {1, 1}});
+    }
     pool->setName(maxpoolLayerName.c_str());
 
     return pool;
