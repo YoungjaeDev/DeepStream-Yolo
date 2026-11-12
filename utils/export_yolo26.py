@@ -57,6 +57,7 @@ def yolo26_export(weights, device, fuse=True):
         p.requires_grad = False
     model.eval()
     model.float()
+    model.end2end = True  # keep the one-to-one head: recent Ultralytics drops it in fuse() otherwise
     if fuse:
         model = model.fuse()
     for k, m in model.named_modules():
@@ -118,6 +119,7 @@ def main(args):
         onnx_input_im,
         onnx_output_file,
         verbose=False,
+        dynamo=False,  # the dynamo exporter needs onnxscript and fails here
         opset_version=args.opset,
         do_constant_folding=True,
         input_names=["input"],
